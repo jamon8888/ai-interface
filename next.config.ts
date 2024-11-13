@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     ppr: true,
+    serverActions: {
+      bodySizeLimit: '100mb',
+    },
   },
   images: {
     remotePatterns: [

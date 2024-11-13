@@ -44,6 +44,8 @@ export const config = {
     "/chat/:id",
     "/login",
     "/register",
+    "/admin",
+    "/admin/:path*",
     '/((?!_next|_vercel|.*\\..*).*)'
   ]
 };

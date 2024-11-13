@@ -2,6 +2,7 @@
 import { ChevronUp } from 'lucide-react';
 import Image from 'next/image';
 import { type User } from 'next-auth';
+import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import { useTranslations } from 'next-intl';
 import { useTheme } from 'next-themes';
@@ -51,8 +52,12 @@ export function SidebarUserNav({ user }: { user: User }) {
               >
                 {`${content('toggle')} ${theme === 'light' ? content('dark') : content('light')} ${content('mode')}`}
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              
             */}
+            <DropdownMenuItem asChild>
+              <Link href="/admin">Admin</Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <button
                 className="w-full cursor-pointer"
