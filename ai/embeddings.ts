@@ -1,6 +1,10 @@
 import { embed } from 'ai';
 import { openai } from '@ai-sdk/openai';
-import pdf from 'pdf-parse';
+import pdfParse from 'pdf-parse';
+
+const EMBEDDINGS_MODEL = 'text-embedding-ada-002'
+const TXT_CONTENT_TYPE = 'text/plain'
+const PDF_CONTENT_TYPE = 'application/pdf'
 
 /**
  * Extracts text content from a file.
@@ -10,18 +14,14 @@ import pdf from 'pdf-parse';
  * @returns A promise that resolves to the extracted text
  */
 export async function extractTextFromFile(file: File): Promise<string> {
-  if (file.type === 'text/plain') {
+  if (file.type === TXT_CONTENT_TYPE) {
     return await file.text();
-  } else if (file.type === 'application/pdf') {
+  } else if (file.type === PDF_CONTENT_TYPE) {
     const arrayBuffer = await file.arrayBuffer();
-    const dataBuffer = Buffer.from(arrayBuffer);
-    //const pdfText = pdfParse(dataBuffer);
-    console.log(dataBuffer)
-    //return pdfText.text;
-    //console.log(pdf(dataBuffer))
-    return "yada"
+    const pdfText = await pdfParse(Buffer.from(arrayBuffer));
+    return pdfText.text;
   }
-  //throw new Error('Unsupported file type for text extraction');
+  throw new Error('Unsupported file type for text extraction');
 }
 
 /**
@@ -33,7 +33,7 @@ export async function extractTextFromFile(file: File): Promise<string> {
 export async function generateEmbeddings(text: string): Promise<number[] | null> {
   try {
     const { embedding } = await embed({
-      model: openai.embedding('text-embedding-3-small'), // Adjust model name as needed
+      model: openai.embedding(EMBEDDINGS_MODEL),
       value: text,
     });
     return embedding;

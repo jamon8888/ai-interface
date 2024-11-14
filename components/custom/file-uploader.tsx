@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { PlusIcon } from '@/components/custom/icons';
 import { PreviewAttachment } from './preview-attachment';
+import { generateUUID } from '@/lib/utils';
 
 export function FileUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -32,8 +33,9 @@ export function FileUploader() {
           return;
         }
 
+        const id = generateUUID()
         // Upload embeddings to Pinecone
-        await uploadToPinecone(pathname, embeddings, { url, name: pathname, contentType });
+        await uploadToPinecone(id, embeddings, { url, name: pathname, contentType });
 
         return { url, name: pathname, contentType };
       } else {
@@ -144,7 +146,6 @@ export function FileUploader() {
       )}
 
       <Button
-        variant="outline"
         className="order-1 md:order-1 md:px-2 px-2 md:h-fit ml-auto md:ml-0"
         onClick={(event) => {
           event.preventDefault();

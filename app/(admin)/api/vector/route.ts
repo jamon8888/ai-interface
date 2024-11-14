@@ -1,14 +1,9 @@
 import { NextResponse } from "next/server";
-import { listAllDocuments, addDocument, deleteDocument } from "@/ai/pinecone";
+import { getAllDocuments, addDocument, deleteDocument } from "@/ai/pinecone";
 
 export async function GET() {
   try {
-    const indexName = process.env.PINECONE_INDEX || "";
-    const topK = 1000; // Adjust based on your dataset size or query limits
-    const documents = await listAllDocuments(indexName, topK);
-
-    console.log("Retrieved documents:", documents);
-
+    const documents = await getAllDocuments();
     return NextResponse.json(documents);
   } catch (error) {
     console.error("Error retrieving documents from Pinecone:", error);
@@ -19,13 +14,12 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const { id, vector, metadata } = await req.json();
-    const indexName = process.env.PINECONE_INDEX || "";
 
     if (!id || !vector || !metadata) {
       return NextResponse.json({ error: "Missing required fields: 'id', 'vector', or 'metadata'" }, { status: 400 });
     }
 
-    await addDocument(indexName, id, vector, metadata);
+    await addDocument(id, vector, metadata);
     return NextResponse.json({ message: "Document added successfully" });
   } catch (error) {
     console.error("Error adding document to Pinecone:", error);
@@ -36,13 +30,12 @@ export async function POST(req: Request) {
 export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
-    const indexName = process.env.PINECONE_INDEX || "";
 
     if (!id) {
       return NextResponse.json({ error: "Document ID is required" }, { status: 400 });
     }
 
-    await deleteDocument(indexName, id);
+    await deleteDocument(id);
     return NextResponse.json({ message: "Document deleted successfully" });
   } catch (error) {
     console.error("Error deleting document from Pinecone:", error);

@@ -16,6 +16,8 @@ import { cn } from '@/lib/utils';
 
 import { CheckCirclFillIcon, ChevronDownIcon } from './icons';
 
+const DROPDOWN_DISABLED = true;
+
 export function ModelSelector({
   selectedModelId,
   className,
@@ -41,7 +43,7 @@ export function ModelSelector({
           className
         )}
       >
-        <Button variant="outline" className="md:px-2 md:h-[34px]">
+        <Button variant="outline" className="md:px-2 md:h-[34px]" disabled={DROPDOWN_DISABLED}>
           { selectModel && ai_content(`${selectModel.id}.label`) }
           <ChevronDownIcon />
         </Button>

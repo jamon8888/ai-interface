@@ -43,7 +43,12 @@ const blocksTools: AllowedTools[] = [
   'requestSuggestions',
 ];
 
-const weatherTools: AllowedTools[] = ['getWeather'];
+const allTools: AllowedTools[] = [
+  'getWeather',
+  'createDocument',
+  'updateDocument',
+  'requestSuggestions',
+];
 
 export async function POST(request: Request) {
   const {

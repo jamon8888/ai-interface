@@ -15,6 +15,8 @@ import {
   Message,
   message,
   vote,
+  systemPrompt,
+  SystemPrompt
 } from './schema';
 
 // Optionally, if not using email/pass login, you can
@@ -22,6 +24,7 @@ import {
 // https://authjs.dev/reference/adapter/drizzle
 let client = postgres(`${process.env.POSTGRES_URL!}?sslmode=require`);
 let db = drizzle(client);
+const SYSTEM_PROMPT_ID = process.env.SYSTEM_PROMPT_ID
 
 export async function getUser(email: string): Promise<Array<User>> {
   try {
@@ -275,6 +278,64 @@ export async function getSuggestionsByDocumentId({
     console.error(
       'Failed to get suggestions by document version from database'
     );
+    throw error;
+  }
+}
+
+async function initializeSystemPrompt(): Promise<SystemPrompt> {
+  const defaultContent = { message: 'Default system prompt' }; // Customize as needed
+
+  try {
+    const [newPrompt] = await db
+      .insert(systemPrompt)
+      .values({
+        id: SYSTEM_PROMPT_ID,
+        content: defaultContent,
+      })
+      .returning(); // Return the inserted record
+
+    return newPrompt;
+  } catch (error) {
+    console.error('Failed to initialize SystemPrompt in database', error);
+    throw error;
+  }
+}
+
+export async function getSystemPrompt(): Promise<SystemPrompt> {
+  try {
+    // Try to fetch the existing SystemPrompt with the specified ID
+    const [existingPrompt] = await db
+      .select()
+      .from(systemPrompt)
+      .where(eq(systemPrompt.id, SYSTEM_PROMPT_ID));
+
+    if (existingPrompt) {
+      return existingPrompt;
+    }
+
+    // If no record exists, call initializeSystemPrompt to create it
+    return await initializeSystemPrompt();
+  } catch (error) {
+    console.error('Failed to retrieve or create the SystemPrompt in database', error);
+    throw error;
+  }
+}
+
+export async function updateSystemPrompt(newContent: any): Promise<SystemPrompt> {
+  try {
+    const [updatedPrompt] = await db
+      .update(systemPrompt)
+      .set({ content: newContent })
+      .where(eq(systemPrompt.id, SYSTEM_PROMPT_ID))
+      .returning(); // Return the updated record
+
+    if (!updatedPrompt) {
+      throw new Error('SystemPrompt not found for update');
+    }
+
+    return updatedPrompt;
+  } catch (error) {
+    console.error('Failed to update SystemPrompt content in database', error);
     throw error;
   }
 }

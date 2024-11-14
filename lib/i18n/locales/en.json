@@ -82,7 +82,21 @@
     "downvote_resp": "Downvote Response",
     "downvoting_resp": "Downvoting Response",
     "downvoted_resp": "Downvoted Response",
-    "downvote_resp_failed": "Downvote Response Failed"
+    "downvote_resp_failed": "Downvote Response Failed",
+    "back": "Back",
+    "admin": {
+      "admin": "Admin",
+      "admin_explanation": "Manage system and store settings from the options below",
+      "store": "Store",
+      "store_explainer": "Manage your stored documents",
+      "system": "System",
+      "system_explanation": "System settings and configurations",
+      "loading_documents": "Loading Documents",
+      "no_documents": "No documents found in Store",
+      "id": "ID",
+      "file": "File",
+      "content_type": "Content Type"
+    }
   },
   "404": {
     "page_title": "Page Not Found",

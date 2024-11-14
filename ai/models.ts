@@ -7,17 +7,17 @@ export interface Model {
 
 export const models: Array<Model> = [
   {
-    id: 'gpt-4o-mini',
-    apiIdentifier: 'gpt-4o-mini'
+    id: 'gpt-4o-blocks',
+    apiIdentifier: 'gpt-4o'
   },
   {
     id: 'gpt-4o',
     apiIdentifier: 'gpt-4o'
   },
   {
-    id: 'gpt-4o-blocks',
-    apiIdentifier: 'gpt-4o'
+    id: 'gpt-4o-mini',
+    apiIdentifier: 'gpt-4o-mini'
   },
 ] as const;
 
-export const DEFAULT_MODEL_NAME: string = 'gpt-4o-mini';
+export const DEFAULT_MODEL_NAME: string = 'gpt-4o-blocks';
