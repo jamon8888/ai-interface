@@ -30,7 +30,7 @@ export async function getUser(email: string): Promise<Array<User>> {
   try {
     return await db.select().from(user).where(eq(user.email, email));
   } catch (error) {
-    console.error('Failed to get user from database');
+    console.error('Failed to get user from database', error);
     throw error;
   }
 }
@@ -42,7 +42,7 @@ export async function createUser(email: string, password: string) {
   try {
     return await db.insert(user).values({ email, password: hash });
   } catch (error) {
-    console.error('Failed to create user in database');
+    console.error('Failed to create user in database', error);
     throw error;
   }
 }
@@ -64,7 +64,7 @@ export async function saveChat({
       title,
     });
   } catch (error) {
-    console.error('Failed to save chat in database');
+    console.error('Failed to save chat in database', error);
     throw error;
   }
 }
@@ -76,7 +76,7 @@ export async function deleteChatById({ id }: { id: string }) {
 
     return await db.delete(chat).where(eq(chat.id, id));
   } catch (error) {
-    console.error('Failed to delete chat by id from database');
+    console.error('Failed to delete chat by id from database', error);
     throw error;
   }
 }
@@ -89,7 +89,7 @@ export async function getChatsByUserId({ id }: { id: string }) {
       .where(eq(chat.userId, id))
       .orderBy(desc(chat.createdAt));
   } catch (error) {
-    console.error('Failed to get chats by user from database');
+    console.error('Failed to get chats by user from database', error);
     throw error;
   }
 }
@@ -99,7 +99,7 @@ export async function getChatById({ id }: { id: string }) {
     const [selectedChat] = await db.select().from(chat).where(eq(chat.id, id));
     return selectedChat;
   } catch (error) {
-    console.error('Failed to get chat by id from database');
+    console.error('Failed to get chat by id from database', error);
     throw error;
   }
 }
@@ -188,7 +188,7 @@ export async function saveDocument({
       createdAt: new Date(),
     });
   } catch (error) {
-    console.error('Failed to save document in database');
+    console.error('Failed to save document in database', error);
     throw error;
   }
 }
@@ -203,7 +203,7 @@ export async function getDocumentsById({ id }: { id: string }) {
 
     return documents;
   } catch (error) {
-    console.error('Failed to get document by id from database');
+    console.error('Failed to get document by id from database', error);
     throw error;
   }
 }
@@ -218,7 +218,7 @@ export async function getDocumentById({ id }: { id: string }) {
 
     return selectedDocument;
   } catch (error) {
-    console.error('Failed to get document by id from database');
+    console.error('Failed to get document by id from database', error);
     throw error;
   }
 }
@@ -245,7 +245,8 @@ export async function deleteDocumentsByIdAfterTimestamp({
       .where(and(eq(document.id, id), gt(document.createdAt, timestamp)));
   } catch (error) {
     console.error(
-      'Failed to delete documents by id after timestamp from database'
+      'Failed to delete documents by id after timestamp from database',
+      error
     );
     throw error;
   }
@@ -259,7 +260,7 @@ export async function saveSuggestions({
   try {
     return await db.insert(suggestion).values(suggestions);
   } catch (error) {
-    console.error('Failed to save suggestions in database');
+    console.error('Failed to save suggestions in database', error);
     throw error;
   }
 }
@@ -276,7 +277,8 @@ export async function getSuggestionsByDocumentId({
       .where(and(eq(suggestion.documentId, documentId)));
   } catch (error) {
     console.error(
-      'Failed to get suggestions by document version from database'
+      'Failed to get suggestions by document version from database',
+      error
     );
     throw error;
   }

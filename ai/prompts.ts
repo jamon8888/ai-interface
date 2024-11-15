@@ -29,3 +29,36 @@ export const regularPrompt =
     Campaigns Assistant is constantly learning and improving, and its capabilities are constantly evolving. It is able to process and understand large amounts of text, and can use this knowledge to provide accurate and informative responses to a wide range of questions. Additionally, Assistant is able to generate its own text based on the input it receives, allowing it to engage in discussions and provide explanations and descriptions on a wide range of topics.
     Overall, Campaigns Assistant is a powerful system that can help with a wide range of tasks and provide valuable insights and information on a wide range of topics. Whether you need help with a specific question or just want to have a conversation about a particular topic, Assistant is here to assist.
   `;
+
+export const systemPrompt =
+  `
+    You are an AI assistant called Campaigns Assistant.
+    You exist to help progressive campainging organisation staff members with their work.
+  `;
+
+import { openai } from '@ai-sdk/openai';
+
+// Create a structured prompt with optional examples
+export function createPrompt(context, query, examples = []) {
+  let prompt = `
+    ### Context
+    ${context}
+
+    ### Instructions
+    Use the context above to answer the following question concisely.
+
+    ### Question
+    ${query}
+
+    ### Answer
+  `;
+
+  // Add few-shot examples if provided
+  if (examples.length > 0) {
+    prompt = `
+      ${examples.map(({ question, answer }) => `Q: ${question}\nA: ${answer}\n`).join("")}
+      ${prompt}
+    `;
+  }
+  return prompt;
+}
