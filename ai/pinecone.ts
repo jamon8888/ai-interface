@@ -119,14 +119,13 @@ export async function getAllDocuments(batchSize = 1000): Promise<PineconeRecord[
  * Fetches queried documents in the specified Pinecone index given a query embedding.
  *
  * @param {array} queryEmbedding - vector
- * @param {number} batchSize - The number of documents to fetch per batch
+ * @param {number} batchSize - The number of documents to fetch with closest match
  * @returns {Promise<PineconeRecord[]>} A list of the top matching documents with metadata
  */
-export async function getQueryDocuments(queryEmbedding, batchSize = 5): Promise<PineconeRecord[]> {
+export async function getQueryDocuments(queryEmbedding, batchSize = 50): Promise<PineconeRecord[]> {
   const index = await getIndex();
-
   const matchingDocuments = await index.query({
-    vector: queryEmbedding.data[0].embedding,
+    vector: queryEmbedding,
     topK: batchSize,
     includeValues: true,
     includeMetadata: true,

@@ -11,13 +11,14 @@ export async function POST(request: Request) {
     }
 
     const text = await extractTextFromFile(file);
+    console.log('$$$$$$$$$$$$$$$', text)
     const embeddings = await generateEmbeddings(text);
 
     if (!embeddings) {
       return NextResponse.json({ error: "Failed to generate embeddings" }, { status: 500 });
     }
 
-    return NextResponse.json({ embeddings });
+    return NextResponse.json({ embeddings, text });
   } catch (error) {
     console.error("Error generating embeddings:", error);
     return NextResponse.json({ error: "Failed to generate embeddings" }, { status: 500 });

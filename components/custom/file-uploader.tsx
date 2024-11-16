@@ -26,7 +26,7 @@ export function FileUploader() {
         const { url, pathname, contentType } = data;
 
         // Generate embeddings for the file
-        const embeddings = await generateEmbeddingsForFile(file);
+        const { embeddings, text } = await generateEmbeddingsForFile(file);
 
         if (!embeddings) {
           toast.error('Failed to generate embeddings for the file.');
@@ -35,7 +35,7 @@ export function FileUploader() {
 
         const id = generateUUID()
         // Upload embeddings to Pinecone
-        await uploadToPinecone(id, embeddings, { url, name: pathname, contentType });
+        await uploadToPinecone(id, embeddings, { url, name: pathname, contentType, textContent: text });
 
         return { url, name: pathname, contentType };
       } else {
@@ -59,8 +59,8 @@ export function FileUploader() {
       });
 
       if (response.ok) {
-        const { embeddings } = await response.json();
-        return embeddings;
+        const { embeddings, text } = await response.json();
+        return { embeddings, text };
       } else {
         const { error } = await response.json();
         toast.error(error);
