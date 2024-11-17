@@ -1,14 +1,15 @@
 import {
+  convertToCoreMessages,
   StreamData,
   streamObject,
-  streamText,
+  streamText
 } from 'ai';
 import { z } from 'zod';
 
 import { customModel } from '@/ai';
 import { generateMessageEmbeddings } from "@/ai/embeddings";
 import { getQueryDocuments } from "@/ai/pinecone";
-import { blocksPrompt, regularPrompt, createPrompt } from '@/ai/prompts';
+import { createSystemPrompt, prependSystemPrompt } from '@/ai/prompts';
 import { summariseContext } from "@/ai/summarisation";
 import { blocksTools, weatherTools, allTools } from '@/ai/tools'
 
@@ -24,37 +25,37 @@ import {
   sanitizeResponseMessages,
 } from '@/lib/utils';
 
-export async function createTextStream(id, model, modelId, userMessage, coreMessages, session) {
+async function generateSummarisedContext(userMessage, messages) {
+  // Generate embedding for the query
+  const queryEmbedding = await generateMessageEmbeddings(userMessage, messages);
+  // Retrieve relevant documents from Pinecone
+  const queryDocuments = await getQueryDocuments(queryEmbedding)
+  // Summarize or select key points
+  const summarisedContext = await summariseContext(queryDocuments)
+
+  return summarisedContext
+}
+
+export async function createTextStream(id, model, modelId, userMessage, messages, session) {
   const streamingData = new StreamData();
-  const systemPrompt = modelId === 'gpt-4o-blocks' ? blocksPrompt : regularPrompt
   const maxSteps = 5;
   const activeTools = modelId === 'gpt-4o-blocks' ? blocksTools : weatherTools;
 
+  let summarisedContext = null;
   const useRAG = true;
   // If RAG is enabled, augment the prompt with retrieved context
   if (useRAG) {
-    // Step 1: Generate embedding for the query
-    const queryEmbedding = await generateMessageEmbeddings(userMessage, coreMessages);
-    // Step 2: Retrieve relevant documents from Pinecone
-    const queryDocuments = await getQueryDocuments(queryEmbedding)
-    // Step 3: Summarize or select key points if context is lengthy
-    const summarisedContext = await summariseContext(queryDocuments)
-    console.log('summarisedContext', summarisedContext)
-    // Step 4: Define few-shot examples (optional)
-    const examples = [
-      //{ question: "What is RAG?", answer: "Retrieval-Augmented Generation (RAG) combines external data sources with model-generated answers." },
-      //{ question: "How does RAG improve AI?", answer: "RAG enhances answer relevance by using retrieved information tailored to the query." }
-    ];
-    // Step 5: Create a structured prompt with the context, instructions, and question
-    const prompt = createPrompt(summarisedContext, userMessage, examples);
-    // Step 6: Set up system instruction (if using chat API)
-    const systemMessage = { role: "system", content: systemPrompt };
-    //return NextResponse.json({ message: response.choices[0].message.content.trim() });
+    summarisedContext = await generateSummarisedContext(userMessage, messages);
   }
+
+  const systemPrompt = createSystemPrompt(modelId, summarisedContext);
+  messages = prependSystemPrompt(systemPrompt, messages)
+  console.log('!!!!!!!!!!messages', messages)
+
+  const coreMessages = convertToCoreMessages(messages);
 
   const result = await streamText({
     model: customModel(model.apiIdentifier),
-    system: systemPrompt,
     messages: coreMessages,
     maxSteps,
     experimental_activeTools: activeTools,

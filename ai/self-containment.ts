@@ -1,4 +1,4 @@
-export async function isSelfContained(userMessage, coreMessages = [], language = 'en', approach = 'simplistic') {
+export async function isSelfContained(userMessage, messages = [], language = 'en', approach = 'simplistic') {
   const message = userMessage.content
   
   if (approach == 'simplistic') {
@@ -7,7 +7,7 @@ export async function isSelfContained(userMessage, coreMessages = [], language =
 
   let score = 0;
   let threshold = 6;
-  let priorMessages = coreMessages.map(msg => msg.content).pop();
+  let priorMessages = messages.map(msg => msg.content).pop();
 
   score += dependencyAnalysis(message);
   score += dependencyParsing(message);

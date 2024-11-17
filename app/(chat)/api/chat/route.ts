@@ -1,7 +1,3 @@
-import {
-  convertToCoreMessages
-} from 'ai';
-
 import { models } from '@/ai/models';
 import { createTextStream } from '@/ai/stream-text'
 import { auth } from '@/app/(auth)/auth';
@@ -26,8 +22,6 @@ export async function POST(request: Request) {
   }: { id: string; messages: Array<Message>; modelId: string } =
     await request.json();
 
-  console.log(messages)
-
   const session = await auth();
 
   if (!session || !session.user || !session.user.id) {
@@ -40,8 +34,7 @@ export async function POST(request: Request) {
     return new Response('Model not found', { status: 404 });
   }
 
-  const coreMessages = convertToCoreMessages(messages);
-  const userMessage = getMostRecentUserMessage(coreMessages);
+  const userMessage = getMostRecentUserMessage(messages);
 
   if (!userMessage) {
     return new Response('No user message found', { status: 400 });
@@ -60,7 +53,7 @@ export async function POST(request: Request) {
     ],
   });
 
-  const result = await createTextStream(id, model, modelId, userMessage, coreMessages, session)
+  const result = await createTextStream(id, model, modelId, userMessage, messages, session)
 
   return result.textStream.toDataStreamResponse({
     data: result.dataStream,

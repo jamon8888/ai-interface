@@ -11,22 +11,22 @@ const PDF_CONTENT_TYPE = 'application/pdf'
 /**
  * Generates embeddings for a given text using the Vercel AI SDK.
  * 
- * @param coreMessages - The coreMessages to generate embeddings for
+ * @param messages - The messages to generate embeddings for
  * @returns A promise that resolves to an array of embeddings
  */
-export async function generateMessageEmbeddings(userMessage: string, coreMessages: Array): Promise<number[] | null> {
+export async function generateMessageEmbeddings(userMessage: string, messages: Array): Promise<number[] | null> {
 
-  if (!userMessage || !coreMessages || !coreMessages?.length) {
+  if (!userMessage || !messages || !messages?.length) {
     throw new Error(`Error generateEmbeddings method parameters not passed`);
   }
 
   let queryText;
 
   // whether to use last message from user or full conversation based on Heuristics
-  if (isSelfContained(userMessage, coreMessages)) {
+  if (isSelfContained(userMessage, messages)) {
     queryText = userMessage.content;
   } else {
-    queryText = coreMessages.map(msg => msg.content).join('\n');
+    queryText = messages.map(msg => msg.content).join('\n');
   }
 
   try {
@@ -41,7 +41,7 @@ export async function generateMessageEmbeddings(userMessage: string, coreMessage
 /**
  * Generates embeddings for a given text using the Vercel AI SDK.
  * 
- * @param coreMessages - The coreMessages to generate embeddings for
+ * @param text - The text to generate embeddings for
  * @returns A promise that resolves to an array of embeddings
  */
 export async function generateEmbeddings(text: string): Promise<number[] | null> {

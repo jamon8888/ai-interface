@@ -11,7 +11,6 @@ export async function POST(request: Request) {
     }
 
     const text = await extractTextFromFile(file);
-    console.log('$$$$$$$$$$$$$$$', text)
     const embeddings = await generateEmbeddings(text);
 
     if (!embeddings) {

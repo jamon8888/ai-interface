@@ -14,19 +14,20 @@ const SUMMARY_SYSTEM_PROMPT = 'Summarise the following text into key points.'
  */
 export async function summariseContext(queryDocuments) {
   try {
-    const rawContext = queryDocuments.matches.map(match => match.metadata.textContent).join("\n");
+    const rawText = queryDocuments.matches.map(match => match.metadata.textContent).join("\n");
 
-    if (rawContext.length > 500){
+    if (rawText.length > 500){
       const { text } = await generateText({
         model: openai(SUMMARISATION_MODEL),
         system: SUMMARY_SYSTEM_PROMPT,
-        prompt: rawContext,
+        prompt: rawText,
         max_tokens: MAX_TOKENS,
         temperature: MODEL_TEMPERATURE,
       });
-      console.log('summary', text)
       return text;
     }
+
+    return rawText;
   } catch(error) {
     console.error(error)
   }
