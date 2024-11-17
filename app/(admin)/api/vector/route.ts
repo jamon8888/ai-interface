@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { getAllDocuments, addDocument, deleteDocument } from "@/ai/pinecone";
 
 export async function GET() {

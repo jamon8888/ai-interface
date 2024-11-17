@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { setRagCookie, getRagCookie } from '@/lib/utils/cookies-client';
+
 import { CheckCirclFillIcon } from './icons';
 import { Button } from "../ui/button";
 

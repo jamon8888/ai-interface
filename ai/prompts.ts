@@ -19,6 +19,9 @@ const blocksPromptTemplate = `
   - Use targeted updates only for specific, isolated changes
   - Follow user instructions for which parts to modify
 
+  **When to use \`getWeather\`:**
+  - When explicitly requested to get the weather
+
   Do not update document right after creating it. Wait for user feedback or request to update it.
 `;
 

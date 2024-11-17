@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { generateEmbeddings } from "@/ai/embeddings";
 import { getQueryDocuments } from "@/ai/pinecone";
 

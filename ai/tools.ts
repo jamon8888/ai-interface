@@ -4,21 +4,9 @@ type AllowedTools =
   | 'requestSuggestions'
   | 'getWeather';
 
-export const blocksTools: AllowedTools[] = [
-  'createDocument',
-  'updateDocument',
-  'requestSuggestions',
-  'testTool'
-];
-
-export const weatherTools: AllowedTools[] = [
-  'getWeather'
-];
-
 export const allTools: AllowedTools[] = [
-  'getWeather',
   'createDocument',
   'updateDocument',
   'requestSuggestions',
-  'testTool'
+  'getWeather'
 ];

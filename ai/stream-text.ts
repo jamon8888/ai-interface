@@ -11,7 +11,7 @@ import { generateMessageEmbeddings } from "@/ai/embeddings";
 import { getQueryDocuments } from "@/ai/pinecone";
 import { createSystemPrompt, prependSystemPrompt } from '@/ai/prompts';
 import { summariseContext } from "@/ai/summarisation";
-import { blocksTools, weatherTools, allTools } from '@/ai/tools'
+import { allTools } from '@/ai/tools'
 
 import {
   getDocumentById,
@@ -39,7 +39,6 @@ async function generateSummarisedContext(userMessage, messages) {
 export async function createTextStream(id, model, modelId, userMessage, messages, session) {
   const streamingData = new StreamData();
   const maxSteps = 5;
-  const activeTools = modelId === 'gpt-4o-blocks' ? blocksTools : weatherTools;
 
   let summarisedContext = null;
   const useRAG = true;
@@ -50,7 +49,6 @@ export async function createTextStream(id, model, modelId, userMessage, messages
 
   const systemPrompt = createSystemPrompt(modelId, summarisedContext);
   messages = prependSystemPrompt(systemPrompt, messages)
-  console.log('!!!!!!!!!!messages', messages)
 
   const coreMessages = convertToCoreMessages(messages);
 
@@ -58,7 +56,7 @@ export async function createTextStream(id, model, modelId, userMessage, messages
     model: customModel(model.apiIdentifier),
     messages: coreMessages,
     maxSteps,
-    experimental_activeTools: activeTools,
+    experimental_activeTools: allTools,
     tools: {
       getWeather: {
         description: 'Get the current weather at a location',

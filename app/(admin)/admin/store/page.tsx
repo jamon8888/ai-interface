@@ -1,8 +1,11 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 import { useState, useEffect } from 'react';
+
+import { FileUploader } from '@/components/custom/file-uploader';
+import { TrashIcon } from '@/components/custom/icons';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,8 +17,6 @@ import {
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
-import { FileUploader } from '@/components/custom/file-uploader';
-import { TrashIcon } from '@/components/custom/icons';
 
 export default function StorePage() {
   const content = useTranslations('content');

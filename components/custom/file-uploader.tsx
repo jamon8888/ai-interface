@@ -1,54 +1,19 @@
 import React, { useRef, useState, useCallback, ChangeEvent } from 'react';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+
 import { PlusIcon } from '@/components/custom/icons';
-import { PreviewAttachment } from './preview-attachment';
+import { Button } from '@/components/ui/button';
 import { generateUUID } from '@/lib/utils';
+
+import { PreviewAttachment } from './preview-attachment';
 
 export function FileUploader() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploadQueue, setUploadQueue] = useState<Array<string>>([]);
   const [attachments, setAttachments] = useState<Array<{ url: string; name: string; contentType: string }>>([]);
 
-  // Function to upload file to Blob storage
-  const uploadFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    try {
-      const response = await fetch(`/api/files/upload`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        const { url, pathname, contentType } = data;
-
-        // Generate embeddings for the file
-        const { embeddings, text } = await generateEmbeddingsForFile(file);
-
-        if (!embeddings) {
-          toast.error('Failed to generate embeddings for the file.');
-          return;
-        }
-
-        const id = generateUUID()
-        // Upload embeddings to Pinecone
-        await uploadToPinecone(id, embeddings, { url, name: pathname, contentType, textContent: text });
-
-        return { url, name: pathname, contentType };
-      } else {
-        const { error } = await response.json();
-        toast.error(error);
-      }
-    } catch (error) {
-      toast.error('Failed to upload file, please try again!');
-    }
-  };
-
   // Function to generate embeddings by calling an API route
-  const generateEmbeddingsForFile = async (file: File) => {
+  const generateEmbeddingsForFile = useCallback(async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);
 
@@ -68,10 +33,10 @@ export function FileUploader() {
     } catch (error) {
       toast.error('Failed to generate embeddings, please try again!');
     }
-  };
+  }, []); // No dependencies
 
   // Function to upload the embeddings to Pinecone
-  const uploadToPinecone = async (id: string, vector: number[], metadata: Record<string, any>) => {
+  const uploadToPinecone = useCallback(async (id: string, vector: number[], metadata: Record<string, any>) => {
     try {
       const response = await fetch('/api/vector', {
         method: 'POST',
@@ -87,8 +52,49 @@ export function FileUploader() {
       console.error('Error uploading to Pinecone:', error);
       toast.error('Error uploading to Pinecone.');
     }
-  };
+  }, []); // No dependencies
 
+  // Function to upload file to Blob storage
+  const uploadFile = useCallback(
+    async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch(`/api/files/upload`, {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const { url, pathname, contentType } = data;
+
+          // Generate embeddings for the file
+          const { embeddings, text } = await generateEmbeddingsForFile(file);
+
+          if (!embeddings) {
+            toast.error('Failed to generate embeddings for the file.');
+            return;
+          }
+
+          const id = generateUUID();
+          // Upload embeddings to Pinecone
+          await uploadToPinecone(id, embeddings, { url, name: pathname, contentType, textContent: text });
+
+          return { url, name: pathname, contentType };
+        } else {
+          const { error } = await response.json();
+          toast.error(error);
+        }
+      } catch (error) {
+        toast.error('Failed to upload file, please try again!');
+      }
+    },
+    [generateEmbeddingsForFile, uploadToPinecone] // Dependencies
+  );
+
+  // Handle file input change event
   const handleFileChange = useCallback(
     async (event: ChangeEvent<HTMLInputElement>) => {
       const files = Array.from(event.target.files || []);
@@ -111,7 +117,7 @@ export function FileUploader() {
         setUploadQueue([]);
       }
     },
-    []
+    [uploadFile] // Dependency
   );
 
   return (

@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
+import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -41,7 +42,7 @@ export default function SystemPage() {
     };
 
     fetchSystemPrompt();
-  }, []);
+  }, [content]);
 
   const handleSave = async () => {
     setShowConfirmDialog(false);

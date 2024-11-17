@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+
 import { extractTextFromFile, generateEmbeddings } from "@/ai/embeddings";
 
 export async function POST(request: Request) {
